@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScalpCalc - Fartcoin</title>
+    <title>ScalpCalc - Universal Tracker</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -19,7 +19,7 @@
         .main-card {
             background-color: #ffffff;
             width: 100%;
-            max-width: 420px; /* Menyesuaikan ukuran layar HP seperti di screenshot */
+            max-width: 420px;
             border-radius: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             padding: 30px 25px;
@@ -38,6 +38,7 @@
             font-size: 0.85rem;
             color: #888;
             margin-bottom: 5px;
+            font-weight: 500;
         }
 
         .form-control {
@@ -90,11 +91,10 @@
         /* History Card */
         .history-card {
             border: 1px solid #eee;
-            border-left: 3px solid #0d6efd;
+            border-left: 4px solid #0d6efd;
             border-radius: 0 8px 8px 0;
             padding: 12px 15px;
             margin-bottom: 15px;
-            position: relative;
             background-color: #fafbfc;
         }
         .history-card-title {
@@ -104,18 +104,42 @@
             margin-bottom: 2px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
         .history-date { font-size: 0.75rem; color: #999; margin-bottom: 10px; }
-        .history-detail { font-size: 0.8rem; color: #555; line-height: 1.5; }
+        
+        .history-input-summary {
+            background-color: #e9ecef;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: #495057;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .history-detail { font-size: 0.8rem; color: #555; line-height: 1.6; }
+        .history-detail span { display: block; padding-left: 8px; border-left: 2px solid #ccc; margin-bottom: 4px; }
+        
         .btn-delete {
             color: #dc3545;
             cursor: pointer;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 1.1rem;
             border: none;
             background: none;
-            padding: 0;
+            padding: 0 5px;
             line-height: 1;
+        }
+        
+        .badge-koin {
+            background-color: #0d6efd;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 6px;
+            vertical-align: middle;
         }
     </style>
 </head>
@@ -126,20 +150,26 @@
 
     <!-- Inputs -->
     <div class="mb-3">
-        <label class="form-label">Harga Terakhir</label>
-        <input type="number" id="lastPrice" class="form-control" value="2652" oninput="hitung()">
+        <label class="form-label">Nama Koin</label>
+        <input type="text" id="namaKoin" class="form-control" placeholder="Misal: FART, BTC, SOL" value="FART" oninput="hitung()">
     </div>
     <div class="mb-3">
-        <label class="form-label">Harga Rata-rata (Avg)</label>
-        <input type="number" id="avgPrice" class="form-control" value="2680" oninput="hitung()">
+        <label class="form-label">Harga Terakhir (Market)</label>
+        <input type="number" id="lastPrice" class="form-control" placeholder="0" oninput="hitung()">
     </div>
     <div class="mb-3">
-        <label class="form-label">Jumlah Koin</label>
-        <input type="number" id="jmlKoin" class="form-control" value="314" oninput="hitung()">
+        <label class="form-label">Harga Rata-rata Beli (Avg)</label>
+        <input type="number" id="avgPrice" class="form-control" placeholder="0" oninput="hitung()">
     </div>
-    <div class="mb-3">
-        <label class="form-label">Sisa Saldo (IDR)</label>
-        <input type="number" id="saldoIdr" class="form-control" value="245000" oninput="hitung()">
+    <div class="row g-2 mb-3">
+        <div class="col-6">
+            <label class="form-label">Jumlah Koin</label>
+            <input type="number" id="jmlKoin" class="form-control" placeholder="0" oninput="hitung()">
+        </div>
+        <div class="col-6">
+            <label class="form-label">Sisa Saldo (IDR)</label>
+            <input type="number" id="saldoIdr" class="form-control" placeholder="0" oninput="hitung()">
+        </div>
     </div>
 
     <!-- Divider -->
@@ -147,7 +177,7 @@
 
     <!-- Live Results -->
     <div id="resultArea">
-        <div class="section-title text-success">Target Jual (TP)</div>
+        <div class="section-title text-success">Target Jual (Take Profit)</div>
         <div class="result-row">
             <span class="result-label" id="lblTp1">TP 1 (+2%)</span>
             <span class="result-value" id="valTp1">0</span>
@@ -161,7 +191,7 @@
             <span class="result-value" id="valTp3">0</span>
         </div>
 
-        <div class="section-title text-warning" style="color: #d39e00 !important;">Jaring Bawah (Beli)</div>
+        <div class="section-title" style="color: #d39e00 !important;">Jaring Bawah (Beli)</div>
         <div class="result-row">
             <span class="result-label" id="lblJar1">Jaring 1 (-2%)</span>
             <span class="result-value" id="valJar1">0</span>
@@ -180,7 +210,7 @@
 
     <!-- Save Action -->
     <div class="d-flex gap-2 mb-3">
-        <input type="text" id="namaCatatan" class="form-control" placeholder="Nama Catatan (Misal: TP Pagi)">
+        <input type="text" id="namaCatatan" class="form-control" placeholder="Nama Taktik (Opsional)">
         <button class="btn btn-simpan" onclick="simpan()">SIMPAN</button>
     </div>
 
@@ -202,7 +232,7 @@
 
     <!-- History List -->
     <div id="historyContainer">
-        <!-- Card disuntikkan via JS -->
+        <!-- History Cards akan muncul di sini -->
     </div>
 
 </div>
@@ -211,9 +241,10 @@
 let currentData = null;
 let historyData = [];
 
-// Fungsi Format Rupiah Ribuan
 function fmt(angka) {
-    return new Intl.NumberFormat('id-ID').format(Math.round(angka));
+    if (isNaN(angka)) return "0";
+    // Menghilangkan desimal berlebih, format standar IDR
+    return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(angka);
 }
 
 function getDateNow() {
@@ -226,11 +257,11 @@ function getDateNow() {
 function getFileDate() {
     const d = new Date();
     const pad = n => n.toString().padStart(2, '0');
-    return `${pad(d.getDate())}${pad(d.getMonth()+1)}${d.getFullYear().toString().substring(2)}_${pad(d.getHours())}`;
+    return `${pad(d.getDate())}${pad(d.getMonth()+1)}${d.getFullYear().toString().substring(2)}_${pad(d.getHours())}${pad(d.getMinutes())}`;
 }
 
-// Fungsi Utama Hitung Otomatis
 function hitung() {
+    const namaKoin = document.getElementById('namaKoin').value.trim() || "KOIN";
     const lastPrice = parseFloat(document.getElementById('lastPrice').value) || 0;
     const avgPrice = parseFloat(document.getElementById('avgPrice').value) || 0;
     const jmlKoin = parseFloat(document.getElementById('jmlKoin').value) || 0;
@@ -238,15 +269,15 @@ function hitung() {
 
     if (lastPrice === 0 && avgPrice === 0) return;
 
-    // Logika Hitung TP
+    // Hitungan TP (Take Profit)
     const tp1P = avgPrice * 1.02, tp2P = avgPrice * 1.04, tp3P = avgPrice * 1.07;
     const tp1Q = Math.floor(jmlKoin * 0.40), tp2Q = Math.floor(jmlKoin * 0.30), tp3Q = jmlKoin - (tp1Q + tp2Q);
 
-    // Logika Hitung Jaring
+    // Hitungan Jaring (Average Down)
     const jar1P = lastPrice * 0.98, jar2P = lastPrice * 0.96, jar3P = lastPrice * 0.93;
     const jar1D = saldoIdr * 0.30, jar2D = saldoIdr * 0.30, jar3D = saldoIdr * 0.40;
     
-    // Update UI Labels (Sebelah Kiri)
+    // Update Tampilan UI Utama
     document.getElementById('lblTp1').innerText = `TP 1 (${tp1Q} koin)`;
     document.getElementById('lblTp2').innerText = `TP 2 (${tp2Q} koin)`;
     document.getElementById('lblTp3').innerText = `TP 3 (${tp3Q} koin)`;
@@ -255,7 +286,6 @@ function hitung() {
     document.getElementById('lblJar2').innerText = `Beli 2 (Rp${fmt(jar2D)})`;
     document.getElementById('lblJar3').innerText = `Beli 3 (Rp${fmt(jar3D)})`;
 
-    // Update UI Values (Sebelah Kanan)
     document.getElementById('valTp1').innerText = fmt(tp1P);
     document.getElementById('valTp2').innerText = fmt(tp2P);
     document.getElementById('valTp3').innerText = fmt(tp3P);
@@ -265,7 +295,7 @@ function hitung() {
     document.getElementById('valJar3').innerText = fmt(jar3P);
 
     currentData = {
-        lastPrice, avgPrice, jmlKoin, saldoIdr,
+        namaKoin, lastPrice, avgPrice, jmlKoin, saldoIdr,
         tp1P, tp2P, tp3P, tp1Q, tp2Q, tp3Q,
         jar1P, jar2P, jar3P, jar1D, jar2D, jar3D
     };
@@ -300,16 +330,37 @@ function renderHistory() {
         const d = item.data;
         const div = document.createElement('div');
         div.className = "history-card";
+        
+        // Membangun tampilan card riwayat yang detail sesuai permintaan
         div.innerHTML = `
             <div class="history-card-title">
-                <span>${item.nama}</span>
+                <div>
+                    <span class="badge-koin">${d.namaKoin}</span>
+                    <span>${item.nama}</span>
+                </div>
                 <button class="btn-delete" onclick="hapusHistory(${item.id})">×</button>
             </div>
             <div class="history-date">${item.tanggal}</div>
+            
+            <div class="history-input-summary">
+                <b>Data Awal:</b> Harga: ${fmt(d.lastPrice)} | Avg: ${fmt(d.avgPrice)} <br>
+                Aset: ${fmt(d.jmlKoin)} Koin | Saldo: Rp${fmt(d.saldoIdr)}
+            </div>
+
             <div class="history-detail">
-                <b>Pasar:</b> ${fmt(d.lastPrice)} | <b>Avg:</b> ${fmt(d.avgPrice)} <br>
-                <b>TP:</b> ${fmt(d.tp1P)} &rarr; ${fmt(d.tp2P)} &rarr; ${fmt(d.tp3P)}<br>
-                <b>Jaring:</b> ${fmt(d.jar1P)} &rarr; ${fmt(d.jar2P)} &rarr; ${fmt(d.jar3P)}
+                <b>🎯 Target Jual (TP):</b>
+                <span style="border-left-color: #2ecc71;">
+                    TP 1: <b>${fmt(d.tp1P)}</b> (Jual ${d.tp1Q} koin)<br>
+                    TP 2: <b>${fmt(d.tp2P)}</b> (Jual ${d.tp2Q} koin)<br>
+                    TP 3: <b>${fmt(d.tp3P)}</b> (Jual ${d.tp3Q} koin)
+                </span>
+                
+                <b style="color: #d39e00;">🛒 Jaring Beli:</b>
+                <span style="border-left-color: #d39e00;">
+                    Beli di <b>${fmt(d.jar1P)}</b> (Alokasi: Rp${fmt(d.jar1D)})<br>
+                    Beli di <b>${fmt(d.jar2P)}</b> (Alokasi: Rp${fmt(d.jar2D)})<br>
+                    Beli di <b>${fmt(d.jar3P)}</b> (Alokasi: Rp${fmt(d.jar3D)})
+                </span>
             </div>
         `;
         container.appendChild(div);
@@ -317,26 +368,38 @@ function renderHistory() {
 }
 
 function ekspor() {
-    if (historyData.length === 0) { alert("Belum ada catatan!"); return; }
+    if (historyData.length === 0) { alert("Belum ada catatan untuk diekspor!"); return; }
 
-    let text = "=== RIWAYAT SCALPING FARTCOIN ===\n\n";
+    let text = "=== RIWAYAT SCALPCALC UNIVERSAL ===\n\n";
     historyData.forEach((item, i) => {
         const d = item.data;
-        text += `[${i+1}] ${item.nama}\nTanggal: ${item.tanggal}\n`;
-        text += `Harga Pasar: ${fmt(d.lastPrice)} | Avg: ${fmt(d.avgPrice)} | Saldo: ${fmt(d.saldoIdr)}\n`;
-        text += `TARGET JUAL:\n- TP1: ${fmt(d.tp1P)} (${d.tp1Q} koin)\n- TP2: ${fmt(d.tp2P)} (${d.tp2Q} koin)\n- TP3: ${fmt(d.tp3P)} (${d.tp3Q} koin)\n`;
-        text += `JARING BELI:\n- Beli 1: ${fmt(d.jar1P)} (Dana: Rp${fmt(d.jar1D)})\n- Beli 2: ${fmt(d.jar2P)} (Dana: Rp${fmt(d.jar2D)})\n- Beli 3: ${fmt(d.jar3P)} (Dana: Rp${fmt(d.jar3D)})\n`;
-        text += "-----------------------------------\n\n";
+        text += `[${i+1}] NAMA KOIN: ${d.namaKoin} | CATATAN: ${item.nama}\n`;
+        text += `Tanggal Input : ${item.tanggal}\n`;
+        text += `Harga Pasar   : ${fmt(d.lastPrice)}\n`;
+        text += `Avg Price     : ${fmt(d.avgPrice)}\n`;
+        text += `Jumlah Aset   : ${fmt(d.jmlKoin)} koin\n`;
+        text += `Sisa Saldo    : Rp${fmt(d.saldoIdr)}\n`;
+        text += `-----------------------------------\n`;
+        text += `🎯 TARGET JUAL (TAKE PROFIT):\n`;
+        text += `  - TP 1: Jual di harga ${fmt(d.tp1P)} (${d.tp1Q} koin)\n`;
+        text += `  - TP 2: Jual di harga ${fmt(d.tp2P)} (${d.tp2Q} koin)\n`;
+        text += `  - TP 3: Jual di harga ${fmt(d.tp3P)} (${d.tp3Q} koin)\n`;
+        text += `🛒 JARING BAWAH (BELI):\n`;
+        text += `  - Jaring 1: Beli di harga ${fmt(d.jar1P)} (Alokasi Rp${fmt(d.jar1D)})\n`;
+        text += `  - Jaring 2: Beli di harga ${fmt(d.jar2P)} (Alokasi Rp${fmt(d.jar2D)})\n`;
+        text += `  - Jaring 3: Beli di harga ${fmt(d.jar3P)} (Alokasi Rp${fmt(d.jar3D)})\n`;
+        text += "===================================\n\n";
     });
 
     const blob = new Blob([text], { type: 'text/plain' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `taktikax_${getFileDate()}.txt`;
+    link.download = `ScalpCalc_${getFileDate()}.txt`;
     link.click();
 }
 
 function resetForm() {
+    document.getElementById('namaKoin').value = "";
     document.getElementById('lastPrice').value = "";
     document.getElementById('avgPrice').value = "";
     document.getElementById('jmlKoin').value = "";
@@ -344,7 +407,6 @@ function resetForm() {
     document.getElementById('namaCatatan').value = "";
     currentData = null;
     
-    // Kembalikan teks ke default
     const defaults = { lblTp1: "TP 1 (+2%)", lblTp2: "TP 2 (+4%)", lblTp3: "TP 3 (+7%)", lblJar1: "Jaring 1 (-2%)", lblJar2: "Jaring 2 (-4%)", lblJar3: "Jaring 3 (-7%)" };
     for(let id in defaults) document.getElementById(id).innerText = defaults[id];
     
@@ -353,19 +415,16 @@ function resetForm() {
 }
 
 function salinHasil() {
-    if (!currentData) { alert("Hitung taktik terlebih dahulu!"); return; }
+    if (!currentData) { alert("Isi form terlebih dahulu!"); return; }
     const d = currentData;
-    const textToCopy = `TAKTIK SCALPING FARTCOIN\nPasar: ${fmt(d.lastPrice)} | Avg: ${fmt(d.avgPrice)}\n\n` +
-                       `TP 1: ${fmt(d.tp1P)} (${d.tp1Q} koin)\nTP 2: ${fmt(d.tp2P)} (${d.tp2Q} koin)\nTP 3: ${fmt(d.tp3P)} (${d.tp3Q} koin)\n\n` +
-                       `Jaring 1: ${fmt(d.jar1P)} (Rp${fmt(d.jar1D)})\nJaring 2: ${fmt(d.jar2P)} (Rp${fmt(d.jar2D)})\nJaring 3: ${fmt(d.jar3P)} (Rp${fmt(d.jar3D)})`;
+    const textToCopy = `TAKTIK SCALPING ${d.namaKoin}\nData: Pasar ${fmt(d.lastPrice)} | Avg ${fmt(d.avgPrice)}\n\n` +
+                       `🎯 JUAL:\nTP 1: ${fmt(d.tp1P)} (${d.tp1Q} koin)\nTP 2: ${fmt(d.tp2P)} (${d.tp2Q} koin)\nTP 3: ${fmt(d.tp3P)} (${d.tp3Q} koin)\n\n` +
+                       `🛒 BELI:\nJaring 1: ${fmt(d.jar1P)} (Rp${fmt(d.jar1D)})\nJaring 2: ${fmt(d.jar2P)} (Rp${fmt(d.jar2D)})\nJaring 3: ${fmt(d.jar3P)} (Rp${fmt(d.jar3D)})`;
     
-    navigator.clipboard.writeText(textToCopy).then(() => {
-        alert("Berhasil disalin ke clipboard!");
-    });
+    navigator.clipboard.writeText(textToCopy).then(() => alert("Berhasil disalin ke clipboard!"));
 }
 
-// Hitung pertama kali saat halaman dimuat
-window.onload = hitung;
+// Tidak melakukan hitung otomatis saat halaman dimuat agar kosong dan rapi
 </script>
 </body>
 </html>
