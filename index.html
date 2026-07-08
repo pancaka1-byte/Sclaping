@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fartcoin Scalping Calculator</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #121824; color: #e4e6eb; }
+        .card { background-color: #1c2434; border: 1px solid #2d3748; }
+        .form-control { background-color: #2d3748; color: #fff; border: 1px solid #4a5568; }
+        .form-control:focus { background-color: #2d3748; color: #fff; border-color: #3182ce; box-shadow: none; }
+        .result-box { background-color: #232d3f; border-left: 4px solid #3182ce; padding: 15px; border-radius: 4px; }
+        .text-tp { color: #48bb78; }
+        .text-jaring { color: #ecc94b; }
+    </style>
+</head>
+<body>
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg p-4 mb-4">
+                <h3 class="text-center mb-4 fw-bold text-info">📊 FARTCOIN SCALPCALC</h3>
+                <hr class="border-secondary">
+                
+                <!-- INPUT FORM -->
+                <div class="mb-3">
+                    <label class="form-label">Harga Terakhir (Last Price)</label>
+                    <input type="number" id="lastPrice" class="form-control" placeholder="Contoh: 2652" value="2652">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Harga Rata-rata Beli (Avg Price)</label>
+                    <input type="number" id="avgPrice" class="form-control" placeholder="Contoh: 2680" value="2680">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Jumlah Koin yang Dipunya</label>
+                    <input type="number" id="jmlKoin" class="form-control" placeholder="Contoh: 314" value="314">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Sisa Saldo Siap Pakai (IDR)</label>
+                    <input type="number" id="saldoIdr" class="form-control" placeholder="Contoh: 245000" value="245000">
+                </div>
+                
+                <button onclick="hitungStrategi()" class="btn btn-info w-100 fw-bold my-2 text-dark">Hitung Strategi</button>
+            </div>
+
+            <!-- HASIL PERHITUNGAN -->
+            <div id="hasilSeksi" class="card shadow-lg p-4 d-none">
+                <h4 class="fw-bold mb-3">⚡ Rekomendasi Action</h4>
+                
+                <div class="result-box mb-3">
+                    <h5 class="text-tp fw-bold">🎯 TARGET JUAL (TAKE PROFIT BERTAHAP):</h5>
+                    <ul class="mb-0 list-unstyled">
+                        <li id="tp1"></li>
+                        <li id="tp2"></li>
+                        <li id="tp3"></li>
+                    </ul>
+                </div>
+
+                <div class="result-box">
+                    <h5 class="text-jaring fw-bold">🛒 TARGET JARING BAWAH (AMBIL POSISI):</h5>
+                    <ul class="mb-0 list-unstyled">
+                        <li id="jaring1"></li>
+                        <li id="jaring2"></li>
+                        <li id="jaring3"></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- JAVASCRIPT LOGIC -->
+<script>
+function formatRupiah(angka) {
+    return new Intl.NumberFormat('id-ID').format(Math.round(angka));
+}
+
+function hitungStrategi() {
+    // Ambil Nilai Input
+    const lastPrice = parseFloat(document.getElementById('lastPrice').value);
+    const avgPrice = parseFloat(document.getElementById('avgPrice').value);
+    const jmlKoin = parseFloat(document.getElementById('jmlKoin').value);
+    const saldoIdr = parseFloat(document.getElementById('saldoIdr').value);
+
+    if (isNaN(lastPrice) || isNaN(avgPrice) || isNaN(jmlKoin) || isNaN(saldoIdr)) {
+        alert("Mohon isi semua data dengan angka yang valid!");
+        return;
+    }
+
+    // 1. Kalkulasi Target Jual (Take Profit)
+    const tp1Price = avgPrice * 1.02;
+    const tp2Price = avgPrice * 1.04;
+    const tp3Price = avgPrice * 1.07;
+
+    const tp1Qty = Math.floor(jmlKoin * 0.40);
+    const tp2Qty = Math.floor(jmlKoin * 0.30);
+    const tp3Qty = jmlKoin - (tp1Qty + tp2Qty);
+
+    // 2. Kalkulasi Jaring Beli
+    const danaJaring1 = saldoIdr * 0.30;
+    const danaJaring2 = saldoIdr * 0.30;
+    const danaJaring3 = saldoIdr * 0.40;
+
+    const hargaJaring1 = lastPrice * 0.98;
+    const hargaJaring2 = lastPrice * 0.96;
+    const hargaJaring3 = lastPrice * 0.93;
+
+    const estFart1 = (danaJaring1 / hargaJaring1).toFixed(1);
+    const estFart2 = (danaJaring2 / hargaJaring2).toFixed(1);
+    const estFart3 = (danaJaring3 / hargaJaring3).toFixed(1);
+
+    // Tampilkan Hasil ke Dokumen Web
+    document.getElementById('tp1').innerHTML = `• Jual 40% (<b>${tp1Qty}</b> FART) di harga: <b>${formatRupiah(tp1Price)}</b> (+2%)`;
+    document.getElementById('tp2').innerHTML = `• Jual 30% (<b>${tp2Qty}</b> FART) di harga: <b>${formatRupiah(tp2Price)}</b> (+4%)`;
+    document.getElementById('tp3').innerHTML = `• Jual Sisa (<b>${tp3Qty}</b> FART) di harga: <b>${formatRupiah(tp3Price)}</b> (+7%)`;
+
+    document.getElementById('jaring1').innerHTML = `• Jaring 1 (30%): Pasang <b>Rp${formatRupiah(danaJaring1)}</b> di harga <b>${formatRupiah(hargaJaring1)}</b> (Est: ±${estFart1} FART)`;
+    document.getElementById('jaring2').innerHTML = `• Jaring 2 (30%): Pasang <b>Rp${formatRupiah(danaJaring2)}</b> di harga <b>${formatRupiah(hargaJaring2)}</b> (Est: ±${estFart2} FART)`;
+    document.getElementById('jaring3').innerHTML = `• Jaring 3 (40%): Pasang <b>Rp${formatRupiah(danaJaring3)}</b> di harga <b>${formatRupiah(hargaJaring3)}</b> (Est: ±${estFart3} FART)`;
+
+    // Munculkan kontainer hasil
+    document.getElementById('hasilSeksi').classList.remove('d-none');
+}
+</script>
+</body>
+</html>
