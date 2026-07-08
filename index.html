@@ -3,280 +3,369 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fartcoin Scalping Calculator & Tracker</title>
+    <title>ScalpCalc - Fartcoin</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { 
-            background-color: #0f141c; 
-            color: #ffffff; 
+        body {
+            background-color: #f2f3f7;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            padding: 20px 10px;
         }
-        .card { background-color: #1a2230; border: 2px solid #2d394d; border-radius: 12px; }
-        .form-label { font-weight: 600; color: #f8f9fa; font-size: 0.95rem; }
-        .form-control { 
-            background-color: #242f42; 
-            color: #ffffff; 
-            border: 2px solid #3b4b66; 
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-        .form-control:focus { background-color: #242f42; color: #ffffff; border-color: #0dcaf0; box-shadow: none; }
-        
-        /* Kontras Teks Hasil - Dibuat Jauh Lebih Terang & Jelas */
-        .result-box-tp { background-color: #12281f; border-left: 5px solid #2ecc71; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
-        .result-box-jaring { background-color: #2c2512; border-left: 5px solid #f1c40f; padding: 15px; border-radius: 6px; }
-        .text-tp-title { color: #2ecc71; font-weight: 800; font-size: 1.1rem; }
-        .text-jaring-title { color: #f1c40f; font-weight: 800; font-size: 1.1rem; }
-        .list-taktik li { color: #ffffff; font-size: 1.05rem; margin-bottom: 5px; font-weight: 500; }
-        .list-taktik b { color: #0dcaf0; font-weight: 700; } /* Highlight angka dengan warna cyan cerah */
 
-        /* History Styling */
-        .history-item { background-color: #242f42; border: 1px solid #3b4b66; border-radius: 8px; padding: 12px; margin-bottom: 10px; }
-        .history-meta { font-size: 0.85rem; color: #a0aec0; }
+        .main-card {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 420px; /* Menyesuaikan ukuran layar HP seperti di screenshot */
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 30px 25px;
+        }
+
+        .app-title {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 1rem;
+            color: #333;
+            box-shadow: none;
+        }
+        .form-control:focus {
+            border-color: #c0c4cc;
+            box-shadow: none;
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background-color: #eee;
+            margin: 20px 0;
+        }
+
+        /* Results List */
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        .result-label { color: #666; }
+        .result-value { font-weight: 600; color: #333; text-align: right; }
+        .section-title { font-size: 0.85rem; font-weight: bold; color: #555; margin-top: 15px; margin-bottom: 5px; text-transform: uppercase;}
+
+        /* Buttons */
+        .btn-simpan { background-color: #2ecc71; color: white; border: none; font-weight: 600; border-radius: 8px; padding: 10px 15px; }
+        .btn-simpan:hover { background-color: #27ae60; color: white;}
+        .btn-reset { background-color: #e2e6ea; color: #555; border: none; font-weight: 600; border-radius: 8px; padding: 10px 15px; }
+        .btn-salin { background-color: #0d6efd; color: white; border: none; font-weight: 600; border-radius: 8px; padding: 10px 15px; }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        .history-title { font-size: 0.95rem; font-weight: 600; color: #333; margin: 0; }
+        .btn-ekspor { background-color: #fd7e14; color: white; border: none; border-radius: 6px; font-size: 0.7rem; font-weight: bold; padding: 5px 10px; }
+
+        /* History Card */
+        .history-card {
+            border: 1px solid #eee;
+            border-left: 3px solid #0d6efd;
+            border-radius: 0 8px 8px 0;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            position: relative;
+            background-color: #fafbfc;
+        }
+        .history-card-title {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 2px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .history-date { font-size: 0.75rem; color: #999; margin-bottom: 10px; }
+        .history-detail { font-size: 0.8rem; color: #555; line-height: 1.5; }
+        .btn-delete {
+            color: #dc3545;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            border: none;
+            background: none;
+            padding: 0;
+            line-height: 1;
+        }
     </style>
 </head>
 <body>
 
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            
-            <div class="card shadow-lg p-4 mb-4">
-                <h3 class="text-center mb-3 fw-bold text-info">📊 FARTCOIN SCALPCALC v2</h3>
-                <hr class="border-secondary mb-4">
-                
-                <div class="mb-3">
-                    <label class="form-label">Harga Terakhir (Last Price)</label>
-                    <input type="number" id="lastPrice" class="form-control" placeholder="Contoh: 2652" value="2652">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Harga Rata-rata Beli (Avg Price)</label>
-                    <input type="number" id="avgPrice" class="form-control" placeholder="Contoh: 2680" value="2680">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Jumlah Koin Sekarang</label>
-                    <input type="number" id="jmlKoin" class="form-control" placeholder="Contoh: 314" value="314">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Sisa Saldo Siap Pakai (IDR)</label>
-                    <input type="number" id="saldoIdr" class="form-control" placeholder="Contoh: 245000" value="245000">
-                </div>
-                
-                <button onclick="hitungStrategi()" class="btn btn-info btn-lg w-100 fw-bold my-2 text-dark shadow-sm">⚡ Hitung Taktik</button>
-            </div>
+<div class="main-card">
+    <div class="app-title">SCALPCALC</div>
 
-            <div id="hasilSeksi" class="card shadow-lg p-4 mb-4 d-none">
-                <h4 class="fw-bold mb-3 text-white">📋 Taktik Saat Ini</h4>
-                
-                <div class="result-box-tp">
-                    <div class="text-tp-title mb-2">🎯 TARGET JUAL (TAKE PROFIT):</div>
-                    <ul class="mb-0 list-unstyled list-taktik">
-                        <li id="tp1"></li>
-                        <li id="tp2"></li>
-                        <li id="tp3"></li>
-                    </ul>
-                </div>
+    <!-- Inputs -->
+    <div class="mb-3">
+        <label class="form-label">Harga Terakhir</label>
+        <input type="number" id="lastPrice" class="form-control" value="2652" oninput="hitung()">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Harga Rata-rata (Avg)</label>
+        <input type="number" id="avgPrice" class="form-control" value="2680" oninput="hitung()">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Jumlah Koin</label>
+        <input type="number" id="jmlKoin" class="form-control" value="314" oninput="hitung()">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Sisa Saldo (IDR)</label>
+        <input type="number" id="saldoIdr" class="form-control" value="245000" oninput="hitung()">
+    </div>
 
-                <div class="result-box-jaring mt-3">
-                    <div class="text-jaring-title mb-2">🛒 JARING BAWAH (TAMBAH POSISI):</div>
-                    <ul class="mb-0 list-unstyled list-taktik">
-                        <li id="jaring1"></li>
-                        <li id="jaring2"></li>
-                        <li id="jaring3"></li>
-                    </ul>
-                </div>
+    <!-- Divider -->
+    <div class="divider"></div>
 
-                <div class="mt-4 pt-3 border-top border-secondary">
-                    <label class="form-label">Beri Nama Catatan Strategi Ini:</label>
-                    <div class="input-group">
-                        <input type="text" id="namaCatatan" class="form-control form-control-sm" placeholder="Misal: Sesi Pagi Teman Jaring, atau Pump 1">
-                        <button onclick="simpanKeHistory()" class="btn btn-warning fw-bold text-dark">Simpan Ke History</button>
-                    </div>
-                </div>
-            </div>
+    <!-- Live Results -->
+    <div id="resultArea">
+        <div class="section-title text-success">Target Jual (TP)</div>
+        <div class="result-row">
+            <span class="result-label" id="lblTp1">TP 1 (+2%)</span>
+            <span class="result-value" id="valTp1">0</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label" id="lblTp2">TP 2 (+4%)</span>
+            <span class="result-value" id="valTp2">0</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label" id="lblTp3">TP 3 (+7%)</span>
+            <span class="result-value" id="valTp3">0</span>
+        </div>
 
-            <div class="card shadow-lg p-4 mb-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="fw-bold mb-0 text-white">⏳ Riwayat Taktik</h4>
-                    <button onclick="eksporKeFolderDownload()" class="btn btn-success btn-sm fw-bold">💾 Export .TXT</button>
-                </div>
-                <div id="historyContainer" style="max-height: 400px; overflow-y: auto;">
-                    <p id="emptyHistory" class="text-muted text-center my-3">Belum ada history yang disimpan.</p>
-                </div>
-            </div>
-
+        <div class="section-title text-warning" style="color: #d39e00 !important;">Jaring Bawah (Beli)</div>
+        <div class="result-row">
+            <span class="result-label" id="lblJar1">Jaring 1 (-2%)</span>
+            <span class="result-value" id="valJar1">0</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label" id="lblJar2">Jaring 2 (-4%)</span>
+            <span class="result-value" id="valJar2">0</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label" id="lblJar3">Jaring 3 (-7%)</span>
+            <span class="result-value" id="valJar3">0</span>
         </div>
     </div>
+
+    <div class="divider"></div>
+
+    <!-- Save Action -->
+    <div class="d-flex gap-2 mb-3">
+        <input type="text" id="namaCatatan" class="form-control" placeholder="Nama Catatan (Misal: TP Pagi)">
+        <button class="btn btn-simpan" onclick="simpan()">SIMPAN</button>
+    </div>
+
+    <!-- Reset & Copy Actions -->
+    <div class="row g-2 mb-2">
+        <div class="col-5">
+            <button class="btn btn-reset w-100" onclick="resetForm()">RESET</button>
+        </div>
+        <div class="col-7">
+            <button class="btn btn-salin w-100" onclick="salinHasil()">SALIN</button>
+        </div>
+    </div>
+
+    <!-- History Header -->
+    <div class="history-header">
+        <div class="history-title">Riwayat Catatan</div>
+        <button class="btn btn-ekspor" onclick="ekspor()">EKSPOR DATA</button>
+    </div>
+
+    <!-- History List -->
+    <div id="historyContainer">
+        <!-- Card disuntikkan via JS -->
+    </div>
+
 </div>
 
 <script>
-// Variabel global penyimpan data sementara untuk history
-let currentTaktikData = null;
-let historyList = [];
+let currentData = null;
+let historyData = [];
 
-function formatRupiah(angka) {
+// Fungsi Format Rupiah Ribuan
+function fmt(angka) {
     return new Intl.NumberFormat('id-ID').format(Math.round(angka));
 }
 
-function getFormattedDate() {
+function getDateNow() {
     const d = new Date();
-    const pad = (n) => n.toString().padStart(2, '0');
-    
-    const day = pad(d.getDate());
-    const month = pad(d.getMonth() + 1);
-    const year = d.getFullYear().toString().substring(2); // yy
-    const hours = pad(d.getHours());
-    const minutes = pad(d.getMinutes());
-    const seconds = pad(d.getSeconds());
-
-    return {
-        filename: `${day}${month}${year}_${hours}${minutes}${seconds}`,
-        display: `${d.getDate()}/${d.getMonth()+1}/20${year} ${hours}:${minutes}:${seconds}`
-    };
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    const pad = n => n.toString().padStart(2, '0');
+    return `${pad(d.getDate())} ${months[d.getMonth()]} ${d.getFullYear()} - ${pad(d.getHours())}.${pad(d.getMinutes())}.${pad(d.getSeconds())}`;
 }
 
-function hitungStrategi() {
-    const lastPrice = parseFloat(document.getElementById('lastPrice').value);
-    const avgPrice = parseFloat(document.getElementById('avgPrice').value);
-    const jmlKoin = parseFloat(document.getElementById('jmlKoin').value);
-    const saldoIdr = parseFloat(document.getElementById('saldoIdr').value);
+function getFileDate() {
+    const d = new Date();
+    const pad = n => n.toString().padStart(2, '0');
+    return `${pad(d.getDate())}${pad(d.getMonth()+1)}${d.getFullYear().toString().substring(2)}_${pad(d.getHours())}`;
+}
 
-    if (isNaN(lastPrice) || isNaN(avgPrice) || isNaN(jmlKoin) || isNaN(saldoIdr)) {
-        alert("Mohon isi semua data dengan benar!");
-        return;
-    }
+// Fungsi Utama Hitung Otomatis
+function hitung() {
+    const lastPrice = parseFloat(document.getElementById('lastPrice').value) || 0;
+    const avgPrice = parseFloat(document.getElementById('avgPrice').value) || 0;
+    const jmlKoin = parseFloat(document.getElementById('jmlKoin').value) || 0;
+    const saldoIdr = parseFloat(document.getElementById('saldoIdr').value) || 0;
 
-    // Perhitungan Persentase
-    const tp1Price = Math.round(avgPrice * 1.02);
-    const tp2Price = Math.round(avgPrice * 1.04);
-    const tp3Price = Math.round(avgPrice * 1.07);
+    if (lastPrice === 0 && avgPrice === 0) return;
 
-    const tp1Qty = Math.floor(jmlKoin * 0.40);
-    const tp2Qty = Math.floor(jmlKoin * 0.30);
-    const tp3Qty = jmlKoin - (tp1Qty + tp2Qty);
+    // Logika Hitung TP
+    const tp1P = avgPrice * 1.02, tp2P = avgPrice * 1.04, tp3P = avgPrice * 1.07;
+    const tp1Q = Math.floor(jmlKoin * 0.40), tp2Q = Math.floor(jmlKoin * 0.30), tp3Q = jmlKoin - (tp1Q + tp2Q);
 
-    const danaJaring1 = Math.round(saldoIdr * 0.30);
-    const danaJaring2 = Math.round(saldoIdr * 0.30);
-    const danaJaring3 = Math.round(saldoIdr * 0.40);
+    // Logika Hitung Jaring
+    const jar1P = lastPrice * 0.98, jar2P = lastPrice * 0.96, jar3P = lastPrice * 0.93;
+    const jar1D = saldoIdr * 0.30, jar2D = saldoIdr * 0.30, jar3D = saldoIdr * 0.40;
+    
+    // Update UI Labels (Sebelah Kiri)
+    document.getElementById('lblTp1').innerText = `TP 1 (${tp1Q} koin)`;
+    document.getElementById('lblTp2').innerText = `TP 2 (${tp2Q} koin)`;
+    document.getElementById('lblTp3').innerText = `TP 3 (${tp3Q} koin)`;
+    
+    document.getElementById('lblJar1').innerText = `Beli 1 (Rp${fmt(jar1D)})`;
+    document.getElementById('lblJar2').innerText = `Beli 2 (Rp${fmt(jar2D)})`;
+    document.getElementById('lblJar3').innerText = `Beli 3 (Rp${fmt(jar3D)})`;
 
-    const hargaJaring1 = Math.round(lastPrice * 0.98);
-    const hargaJaring2 = Math.round(lastPrice * 0.96);
-    const hargaJaring3 = Math.round(lastPrice * 0.93);
+    // Update UI Values (Sebelah Kanan)
+    document.getElementById('valTp1').innerText = fmt(tp1P);
+    document.getElementById('valTp2').innerText = fmt(tp2P);
+    document.getElementById('valTp3').innerText = fmt(tp3P);
+    
+    document.getElementById('valJar1').innerText = fmt(jar1P);
+    document.getElementById('valJar2').innerText = fmt(jar2P);
+    document.getElementById('valJar3').innerText = fmt(jar3P);
 
-    const estFart1 = (danaJaring1 / hargaJaring1).toFixed(1);
-    const estFart2 = (danaJaring2 / hargaJaring2).toFixed(1);
-    const estFart3 = (danaJaring3 / hargaJaring3).toFixed(1);
-
-    // Update Teks Layar Utama dengan kontras tinggi
-    document.getElementById('tp1').innerHTML = `• Jual 40% (<b>${tp1Qty}</b> FART) di harga: <b>${formatRupiah(tp1Price)}</b> (+2%)`;
-    document.getElementById('tp2').innerHTML = `• Jual 30% (<b>${tp2Qty}</b> FART) di harga: <b>${formatRupiah(tp2Price)}</b> (+4%)`;
-    document.getElementById('tp3').innerHTML = `• Jual Sisa (<b>${tp3Qty}</b> FART) di harga: <b>${formatRupiah(tp3Price)}</b> (+7%)`;
-
-    document.getElementById('jaring1').innerHTML = `• Jaring 1 (30%): Pasang <b>Rp${formatRupiah(danaJaring1)}</b> di harga <b>${formatRupiah(hargaJaring1)}</b> (Est: ±${estFart1} FART)`;
-    document.getElementById('jaring2').innerHTML = `• Jaring 2 (30%): Pasang <b>Rp${formatRupiah(danaJaring2)}</b> di harga <b>${formatRupiah(hargaJaring2)}</b> (Est: ±${estFart2} FART)`;
-    document.getElementById('jaring3').innerHTML = `• Jaring 3 (40%): Pasang <b>Rp${formatRupiah(danaJaring3)}</b> di harga <b>${formatRupiah(hargaJaring3)}</b> (Est: ±${estFart3} FART)`;
-
-    // Simpan objek data aktif ke memori global
-    currentTaktikData = {
+    currentData = {
         lastPrice, avgPrice, jmlKoin, saldoIdr,
-        tp1Price, tp2Price, tp3Price, tp1Qty, tp2Qty, tp3Qty,
-        danaJaring1, danaJaring2, danaJaring3, hargaJaring1, hargaJaring2, hargaJaring3,
-        estFart1, estFart2, estFart3
+        tp1P, tp2P, tp3P, tp1Q, tp2Q, tp3Q,
+        jar1P, jar2P, jar3P, jar1D, jar2D, jar3D
     };
-
-    document.getElementById('namaCatatan').value = ""; // reset input nama catatan
-    document.getElementById('hasilSeksi').classList.remove('d-none');
 }
 
-function simpanKeHistory() {
-    if (!currentTaktikData) return;
-    
-    let namaLog = document.getElementById('namaCatatan').value.trim();
-    if (namaLog === "") {
-        namaLog = "Taktik Tanpa Nama";
-    }
+function simpan() {
+    if (!currentData) return;
+    let nama = document.getElementById('namaCatatan').value.trim();
+    if (!nama) nama = "Catatan Tanpa Nama";
 
-    const timeInfo = getFormattedDate();
-    
-    // Satukan data log ke baris riwayat
-    const logItem = {
-        nama: namaLog,
-        waktu: timeInfo.display,
-        data: { ...currentTaktikData }
-    };
+    historyData.unshift({
+        id: Date.now(),
+        nama: nama,
+        tanggal: getDateNow(),
+        data: { ...currentData }
+    });
 
-    historyList.unshift(logItem); // Masukkan ke paling atas daftar
+    document.getElementById('namaCatatan').value = "";
+    renderHistory();
+}
+
+function hapusHistory(id) {
+    historyData = historyData.filter(item => item.id !== id);
     renderHistory();
 }
 
 function renderHistory() {
     const container = document.getElementById('historyContainer');
-    if (historyList.length === 0) {
-        document.getElementById('emptyHistory').classList.remove('d-none');
-        return;
-    }
-    
-    document.getElementById('emptyHistory').classList.add('d-none');
     container.innerHTML = "";
 
-    historyList.forEach((item) => {
+    historyData.forEach(item => {
+        const d = item.data;
         const div = document.createElement('div');
-        div.className = 'history-item';
+        div.className = "history-card";
         div.innerHTML = `
-            <div class="d-flex justify-content-between fw-bold mb-1">
-                <span class="text-info">📌 ${item.nama}</span>
-                <span class="history-meta">${item.waktu}</span>
+            <div class="history-card-title">
+                <span>${item.nama}</span>
+                <button class="btn-delete" onclick="hapusHistory(${item.id})">×</button>
             </div>
-            <div style="font-size:0.9rem; color:#e2e8f0;">
-                <b class="text-success">TP:</b> ${formatRupiah(item.data.tp1Price)} (${item.data.tp1Qty} FART) | ${formatRupiah(item.data.tp2Price)} | ${formatRupiah(item.data.tp3Price)} <br>
-                <b class="text-warning">Jaring:</b> ${formatRupiah(item.data.hargaJaring1)} (Rp${formatRupiah(item.data.danaJaring1)}) | ${formatRupiah(item.data.hargaJaring2)} | ${formatRupiah(item.data.hargaJaring3)}
+            <div class="history-date">${item.tanggal}</div>
+            <div class="history-detail">
+                <b>Pasar:</b> ${fmt(d.lastPrice)} | <b>Avg:</b> ${fmt(d.avgPrice)} <br>
+                <b>TP:</b> ${fmt(d.tp1P)} &rarr; ${fmt(d.tp2P)} &rarr; ${fmt(d.tp3P)}<br>
+                <b>Jaring:</b> ${fmt(d.jar1P)} &rarr; ${fmt(d.jar2P)} &rarr; ${fmt(d.jar3P)}
             </div>
         `;
         container.appendChild(div);
     });
 }
 
-function eksporKeFolderDownload() {
-    if (historyList.length === 0) {
-        alert("Belum ada history catatan untuk diekspor!");
-        return;
-    }
+function ekspor() {
+    if (historyData.length === 0) { alert("Belum ada catatan!"); return; }
 
-    let fileContent = "==================================================\n";
-    fileContent += "        FASTRCOIN TRADING HISTORY LOG             \n";
-    fileContent += "==================================================\n\n";
-
-    historyList.forEach((item, index) => {
-        fileContent += `[${index + 1}] NAMA CATATAN: ${item.nama}\n`;
-        fileContent += `Waktu Input   : ${item.waktu}\n`;
-        fileContent += `Harga Pasar   : ${formatRupiah(item.data.lastPrice)} IDR\n`;
-        fileContent += `Avg Price     : ${formatRupiah(item.data.avgPrice)} IDR\n`;
-        fileContent += `Jumlah Aset   : ${item.data.jmlKoin} FART\n`;
-        fileContent += `Sisa Saldo    : Rp ${formatRupiah(item.data.saldoIdr)}\n`;
-        fileContent += `--------------------------------------------------\n`;
-        fileContent += `🎯 TARGET TAKE PROFIT:\n`;
-        fileContent += `   - Jual 40% (${item.data.tp1Qty} FART) di harga: ${formatRupiah(item.data.tp1Price)}\n`;
-        fileContent += `   - Jual 30% (${item.data.tp2Qty} FART) di harga: ${formatRupiah(item.data.tp2Price)}\n`;
-        fileContent += `   - Jual Sisa (${item.data.tp3Qty} FART) di harga: ${formatRupiah(item.data.tp3Price)}\n`;
-        fileContent += `🛒 JARING BELI BAWAH:\n`;
-        fileContent += `   - Jaring 1: Rp ${formatRupiah(item.data.danaJaring1)} di harga ${formatRupiah(item.data.hargaJaring1)} (Est: +${item.data.estFart1} FART)\n`;
-        fileContent += `   - Jaring 2: Rp ${formatRupiah(item.data.danaJaring2)} di harga ${formatRupiah(item.data.hargaJaring2)} (Est: +${item.data.estFart2} FART)\n`;
-        fileContent += `   - Jaring 3: Rp ${formatRupiah(item.data.danaJaring3)} di harga ${formatRupiah(item.data.hargaJaring3)} (Est: +${item.data.estFart3} FART)\n`;
-        fileContent += "\n==================================================\n\n";
+    let text = "=== RIWAYAT SCALPING FARTCOIN ===\n\n";
+    historyData.forEach((item, i) => {
+        const d = item.data;
+        text += `[${i+1}] ${item.nama}\nTanggal: ${item.tanggal}\n`;
+        text += `Harga Pasar: ${fmt(d.lastPrice)} | Avg: ${fmt(d.avgPrice)} | Saldo: ${fmt(d.saldoIdr)}\n`;
+        text += `TARGET JUAL:\n- TP1: ${fmt(d.tp1P)} (${d.tp1Q} koin)\n- TP2: ${fmt(d.tp2P)} (${d.tp2Q} koin)\n- TP3: ${fmt(d.tp3P)} (${d.tp3Q} koin)\n`;
+        text += `JARING BELI:\n- Beli 1: ${fmt(d.jar1P)} (Dana: Rp${fmt(d.jar1D)})\n- Beli 2: ${fmt(d.jar2P)} (Dana: Rp${fmt(d.jar2D)})\n- Beli 3: ${fmt(d.jar3P)} (Dana: Rp${fmt(d.jar3D)})\n`;
+        text += "-----------------------------------\n\n";
     });
 
-    const timeInfo = getFormattedDate();
-    const fileName = `taktikax_${timeInfo.filename}.txt`;
-
-    // Proses download otomatis file teks lewat browser
-    const blob = new Blob([fileContent], { type: 'text/plain' });
+    const blob = new Blob([text], { type: 'text/plain' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = fileName;
-    document.body.appendChild(link);
+    link.download = `taktikax_${getFileDate()}.txt`;
     link.click();
-    document.body.removeChild(link);
 }
+
+function resetForm() {
+    document.getElementById('lastPrice').value = "";
+    document.getElementById('avgPrice').value = "";
+    document.getElementById('jmlKoin').value = "";
+    document.getElementById('saldoIdr').value = "";
+    document.getElementById('namaCatatan').value = "";
+    currentData = null;
+    
+    // Kembalikan teks ke default
+    const defaults = { lblTp1: "TP 1 (+2%)", lblTp2: "TP 2 (+4%)", lblTp3: "TP 3 (+7%)", lblJar1: "Jaring 1 (-2%)", lblJar2: "Jaring 2 (-4%)", lblJar3: "Jaring 3 (-7%)" };
+    for(let id in defaults) document.getElementById(id).innerText = defaults[id];
+    
+    const zeros = ['valTp1', 'valTp2', 'valTp3', 'valJar1', 'valJar2', 'valJar3'];
+    zeros.forEach(id => document.getElementById(id).innerText = "0");
+}
+
+function salinHasil() {
+    if (!currentData) { alert("Hitung taktik terlebih dahulu!"); return; }
+    const d = currentData;
+    const textToCopy = `TAKTIK SCALPING FARTCOIN\nPasar: ${fmt(d.lastPrice)} | Avg: ${fmt(d.avgPrice)}\n\n` +
+                       `TP 1: ${fmt(d.tp1P)} (${d.tp1Q} koin)\nTP 2: ${fmt(d.tp2P)} (${d.tp2Q} koin)\nTP 3: ${fmt(d.tp3P)} (${d.tp3Q} koin)\n\n` +
+                       `Jaring 1: ${fmt(d.jar1P)} (Rp${fmt(d.jar1D)})\nJaring 2: ${fmt(d.jar2P)} (Rp${fmt(d.jar2D)})\nJaring 3: ${fmt(d.jar3P)} (Rp${fmt(d.jar3D)})`;
+    
+    navigator.clipboard.writeText(textToCopy).then(() => {
+        alert("Berhasil disalin ke clipboard!");
+    });
+}
+
+// Hitung pertama kali saat halaman dimuat
+window.onload = hitung;
 </script>
 </body>
 </html>
